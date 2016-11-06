@@ -84,7 +84,7 @@ public class FindPath {
         return Math.sqrt(xDif*xDif + yDif*yDif);
     }
 
-    private String getPath(){
+    public String getPath(){
         return this.foundPath;
     }
 }
