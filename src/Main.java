@@ -1,8 +1,12 @@
 import javax.swing.*;
 
 /**
- * Created by ben on 2016-11-03.
- */
+ * Author: Benjamin Baird
+ * Created on: 2016-11-04
+ * Last Updated on: 2016-11-05
+ * Filename: NodePackage.java
+ * Description: Main class to execute the GUI and setup the styling of it.
+ **/
 public class Main {
     public static void main (String []args) {
         // Setup the GUI
@@ -15,7 +19,7 @@ public class Main {
             }
 
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
         SwingUtilities.invokeLater(new Runnable() {
             @Override

@@ -2,25 +2,24 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 /**
- * Created by ben on 2016-11-03.
- */
+ * Author: Benjamin Baird
+ * Created on: 2016-11-04
+ * Last Updated on: 2016-11-05
+ * Filename: Graph.java
+ * Description: GUI to display/load/execute searching of the graph
+ **/
 public class Graph extends JPanel {
-    static Node [] nodes;
-    static Integer numEdges = 0;
+    private static Node [] nodes;
+    private static Integer numEdges = 0;
     private static int minX = 9999999;
     private static int minY = 9999999;
     private static int maxX = 0;
@@ -29,19 +28,20 @@ public class Graph extends JPanel {
 
     private static final int PREF_W = 800;
     private static final int PREF_H = 650;
-    static FindPath searchPath;
-    static JFrame frame;
-    static JPanel toolbar;
-    static Graph graph;
-    static JLabel srcLabel;
-    static JLabel sinkLabel;
-    static JTextField srcNode;
-    static JTextField sinkNode;
-    static JButton loadBtn;
+    private static FindPath searchPath;
+    private static JFrame frame;
+    private static JPanel toolbar;
+    private static Graph graph;
+    private static JLabel srcLabel;
+    private static JLabel sinkLabel;
+    private static JTextField srcNode;
+    private static JTextField sinkNode;
+    private static JButton loadBtn;
+    private static JButton searchBtn;
 
 
-    public void addNodes (Node [] nodes) {
-        this.nodes = nodes;
+    private  void addNodes (Node [] nodeArray) {
+        Graph.nodes = nodeArray;
     }
 
     private double normalize(double value,double min, double max){
@@ -141,12 +141,12 @@ public class Graph extends JPanel {
 
     }
 
-    public static void drawEdge(Graphics g, int x1, int y1, int x2, int y2, Color c){
+    private static void drawEdge(Graphics g, int x1, int y1, int x2, int y2, Color c){
         g.setColor(c);
         g.drawLine(x1, y1, x2, y2);
     }
 
-    static ArrayList<Integer []> search(FindPath pathSearch, int src, int dest){
+    private static ArrayList<Integer []> search(FindPath pathSearch, int src, int dest){
         if (src > nodes.length-1 || dest > nodes.length-1 || src < 0 || dest < 0)
             return null;
         return pathSearch.search(nodes, src,dest);
@@ -159,24 +159,25 @@ public class Graph extends JPanel {
     }
 
      static void createAndShowGUI() {
-
          searchPath = new FindPath(nodes);
          frame = new JFrame("City Traveler");
-         frame.getContentPane().setLayout(new BorderLayout());
-         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
          toolbar = new JPanel();
          graph = new Graph();
          srcLabel = new JLabel("Source:");
          sinkLabel = new JLabel("Destination:");
          srcNode = new JTextField("0");
          sinkNode = new JTextField("0");
+         loadBtn = new JButton("Load File");
+         searchBtn = new JButton("Find Path");
+
+         frame.getContentPane().setLayout(new BorderLayout());
+         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
          sinkNode.setColumns(10);
          srcNode.setColumns(10);
-         loadBtn = new JButton("Load File");
+
          loadBtn.addActionListener(new ActionListener() {
              @Override
              public void actionPerformed(ActionEvent e) {
-                 System.out.println("load");
                  visitedNodes = null;
                  searchPath.foundPath = null;
 
@@ -203,11 +204,11 @@ public class Graph extends JPanel {
                                  nodes = new Node[Integer.parseInt(line_toks[0])];
                                  numEdges = Integer.parseInt(line_toks[1]);
                              } else {
-                                 System.out.println("1 Line has invalid number of tokens");
+                                 System.out.println("Invalid file format. (#Nodes #Edges");
                                  return;
                              }
                          } else {
-                             System.out.println("2 Line is null");
+                             System.out.println("Invalid file format. (#Nodes #Edges");
                              return;
                          }
 
@@ -232,7 +233,7 @@ public class Graph extends JPanel {
                          for (int i = 0; i < numEdges; i++) {
 
                              if (line == null) {
-                                 System.out.println("3 Line is null");
+                                 System.out.println("Invalid file format.");
                                  return;
                              }
                              line_toks = line.split(" ");
@@ -243,7 +244,7 @@ public class Graph extends JPanel {
                                  nodes[nodeID2].addEdge(nodeID1);
                                  line = br.readLine();
                              } else {
-                                 System.out.println("4 Line has invalid number of tokens");
+                                 System.out.println("Invalid file format. (NodeId1 NodeId2)");
                                  return;
                              }
 
@@ -252,7 +253,7 @@ public class Graph extends JPanel {
 
                          // Read the src->dest nodes (Last line of file)
                          if (line == null) {
-                             System.out.println("5 No src->dest nodes found");
+                             System.out.println("No source or destination nodes found");
                              srcNode.setText("0");
                              sinkNode.setText("0");
                          } else {
@@ -261,7 +262,7 @@ public class Graph extends JPanel {
                                  srcNode.setText(line_toks[0]);
                                  sinkNode.setText(line_toks[1]);
                              } else {
-                                 System.out.println("6 line tokens");
+                                 System.out.println("Invalid file format. (SourceId DestinationId)");
                                  return;
                              }
                          }
@@ -275,7 +276,6 @@ public class Graph extends JPanel {
                  }
              }
          });
-         JButton searchBtn = new JButton("Find Path");
 
 
          searchBtn.setActionCommand("search");

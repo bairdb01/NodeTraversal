@@ -1,8 +1,11 @@
 import java.util.*;
 
 /**
- * Created by ben on 2016-11-04.
- * TODO: Not mapping some correctly/not displaying correctly
+ * Author: ben
+ * Created on: 2016-11-04
+ * Last Updated on: 2016-11-05
+ * Filename: FindPath.java
+ * Description: Finds a path from nodeid1 to nodeid2 based on their edges
  */
 public class FindPath {
     PairHeap ph;
@@ -15,6 +18,8 @@ public class FindPath {
         this.modifiedNodes =  new HashSet<>();
     }
 
+    // Try to find a path from src to dest
+    // @return list of all the edges visited
     public ArrayList<Integer[]> search(Node [] nodes, int src, int dest) {
         // Reset any previously visited edges
         Iterator it;
@@ -57,6 +62,7 @@ public class FindPath {
                 if (modifiedNodes.contains(neighbourId))
                     continue;
 
+                // Add the neighbour to the heap
                 NodePackage neighbour = new NodePackage(new Node(nodes[neighbourId]), curContainer.path);
                 double distance = getDistance(curContainer.node, neighbour.node);
                 double newPriority = distance + curContainer.node.getPriority();
@@ -71,13 +77,14 @@ public class FindPath {
         return searchOrder;
     }
 
-    public double getDistance(Node node1, Node node2) {
+    // Gets the euclidean distance between two nodes
+    private double getDistance(Node node1, Node node2) {
         double xDif =  node2.getXCoord() - node1.getXCoord();
         double yDif = node2.getYCoord() - node1.getYCoord();
         return Math.sqrt(xDif*xDif + yDif*yDif);
     }
 
-    public String getPath(){
+    private String getPath(){
         return this.foundPath;
     }
 }

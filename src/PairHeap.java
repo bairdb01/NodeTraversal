@@ -1,9 +1,12 @@
 import java.util.ArrayList;
-import java.util.Random;
 
 /**
- * Created by ben on 2016-11-05.
- */
+ * Author: Benjamin Baird
+ * Created on: 2016-11-05
+ * Last Updated on: 2016-11-05
+ * Filename: PairHeap.java
+ * Description: A pairing heap implementation where each node is valued by its Node.priority
+ **/
 public class PairHeap {
     PairHeapNode root;
 
@@ -11,13 +14,17 @@ public class PairHeap {
         this.root = null;
     }
 
+    // Clears the heap
     public void clear() {
         root = null;
     }
+
+    // Checks if the heap is empty
     public boolean isEmpty(){
         return root == null;
     }
 
+    // Removes the root and reheapifies
     public NodePackage removeMin() {
         if (root == null)
             return null;
@@ -33,6 +40,7 @@ public class PairHeap {
         }
     }
 
+    // Merges siblings into one heap using 2-passes
     public PairHeapNode mergeSiblings (PairHeapNode heap) {
         if (heap == null)
             return null;
@@ -70,9 +78,8 @@ public class PairHeap {
 
         return siblings.get(0);
     }
-//    o Merging
-// Make the heap with the larger root the new first child of the heap with the
-//    smaller root
+
+    // Merges two heaps into one
     public PairHeapNode merge (PairHeapNode heap1, PairHeapNode heap2){
         if (heap2 == null) {
             return heap1;
@@ -80,7 +87,7 @@ public class PairHeap {
             return heap2;
         }
 
-        // Add heap1 to left child of heap2
+        // Add heap with larger root to to left child of heap with smaller root
         if (heap1.pkg.node.getPriority() > heap2.pkg.node.getPriority()) {
 
             heap1.sibling = heap2.leftChild;
@@ -94,8 +101,7 @@ public class PairHeap {
         }
     }
 
-//    o Insertion
-// A special case of merge
+    // Inserts a NodePackage into the heap
     public PairHeapNode insert( NodePackage nodePkg) {
         PairHeapNode toInsert = new PairHeapNode(nodePkg);
 
@@ -107,18 +113,4 @@ public class PairHeap {
         return toInsert;
     }
 
-
-//    public static void main (String [] args){
-//        PairHeap heap = new PairHeap();
-//        Random rn = new Random();
-//        for (int i = 0 ; i < 10; i++) {
-//            NodePackage pkgNode = new NodePackage(new Node(i,i,i));
-//            node.updatePriority(rn.nextInt(500));
-//            heap.insert(node);
-//        }
-//
-//        while (!heap.isEmpty())
-//            System.out.print(heap.removeMin());
-//
-//    }
 }

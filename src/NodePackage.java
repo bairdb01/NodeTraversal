@@ -1,6 +1,10 @@
 /**
- * Created by ben on 2016-11-05.
- */
+ * Author: ben
+ * Created on: 2016-11-05
+ * Last Updated on: 2016-11-05
+ * Filename: NodePackage.java
+ * Description: A wrapper class to hold both the node and the path taken to the node
+ **/
 public class NodePackage {
     String path;
     Node node;

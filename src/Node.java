@@ -1,11 +1,14 @@
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 
 /**
- * Created by ben on 2016-11-03.
- */
+ * Author: Benjamin Baird
+ * Created on: 2016-11-04
+ * Last Updated on: 2016-11-05
+ * Filename: Node.java
+ * Description: A node to use in a Graph
+ **/
+
 public class Node {
     private HashSet<Integer> edges;
     private Integer nodeId;
@@ -13,19 +16,13 @@ public class Node {
     private int yCoord;
     private double priority;
 
-    public Node (Node node) {
+    // Clone constructor
+    Node (Node node) {
         this.edges = node.edges;
         this.nodeId = node.nodeId;
         this.xCoord = node.xCoord;
         this.yCoord = node.yCoord;
         this.priority = node.priority;
-    }
-    public Node(){
-        this.edges = new HashSet<>();
-        xCoord = 0;
-        yCoord = 0;
-        priority = 999999999;
-        nodeId = -1;
     }
 
     public Node(int nodeId, int xCoord, int yCoord){
@@ -36,10 +33,7 @@ public class Node {
         this.priority = 999999999;
     }
 
-    /**
-     * Creates a connection between 2 nodes
-     * @return
-     */
+    // Adds to the set of edges destId
     public void addEdge(Integer destId){
         this.edges.add( destId );
     }
