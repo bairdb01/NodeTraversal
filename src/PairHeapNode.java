@@ -2,18 +2,18 @@
  * Created by ben on 2016-11-05.
  */
 public class PairHeapNode {
-    Node node;
+    NodePackage pkg;
     PairHeapNode leftChild;
     PairHeapNode sibling;
 
     public PairHeapNode(){
-        node = null;
+        pkg = null;
         leftChild = null;
         sibling = null;
     }
 
-    public PairHeapNode(Node node){
-        this.node = node;
+    public PairHeapNode(NodePackage nodePkg){
+        this.pkg = nodePkg;
         leftChild = null;
         sibling = null;
     }
@@ -22,7 +22,7 @@ public class PairHeapNode {
     public boolean equals (Object o){
         if(o instanceof PairHeapNode){
             PairHeapNode c = (PairHeapNode) o;
-            return node == c.node;
+            return pkg.node == c.pkg.node;
         }
         return false;
     }

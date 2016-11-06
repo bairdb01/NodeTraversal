@@ -11,22 +11,25 @@ public class PairHeap {
         this.root = null;
     }
 
+    public void clear() {
+        root = null;
+    }
     public boolean isEmpty(){
         return root == null;
     }
 
-    public Node removeMin() {
+    public NodePackage removeMin() {
         if (root == null)
             return null;
 
         if (root.leftChild == null) {
-            Node node= root.node;
+            NodePackage nodePkg= root.pkg;
             root = null;
-            return node;
+            return nodePkg;
         } else {
-            Node node = root.node;
+            NodePackage nodePkg = root.pkg;
             root = mergeSiblings(root.leftChild);
-            return node;
+            return nodePkg;
         }
     }
 
@@ -78,7 +81,7 @@ public class PairHeap {
         }
 
         // Add heap1 to left child of heap2
-        if (heap1.node.getPriority() > heap2.node.getPriority()) {
+        if (heap1.pkg.node.getPriority() > heap2.pkg.node.getPriority()) {
 
             heap1.sibling = heap2.leftChild;
             heap2.leftChild = heap1;
@@ -93,8 +96,8 @@ public class PairHeap {
 
 //    o Insertion
 // A special case of merge
-    public PairHeapNode insert( Node node) {
-        PairHeapNode toInsert = new PairHeapNode(node);
+    public PairHeapNode insert( NodePackage nodePkg) {
+        PairHeapNode toInsert = new PairHeapNode(nodePkg);
 
         if (root == null) {
             root = toInsert;
@@ -105,17 +108,17 @@ public class PairHeap {
     }
 
 
-    public static void main (String [] args){
-        PairHeap heap = new PairHeap();
-        Random rn = new Random();
-        for (int i = 0 ; i < 10; i++) {
-            Node node = new Node(i,i,i);
-            node.updatePriority(rn.nextInt(500));
-            heap.insert(node);
-        }
-
-        while (!heap.isEmpty())
-            System.out.print(heap.removeMin());
-
-    }
+//    public static void main (String [] args){
+//        PairHeap heap = new PairHeap();
+//        Random rn = new Random();
+//        for (int i = 0 ; i < 10; i++) {
+//            NodePackage pkgNode = new NodePackage(new Node(i,i,i));
+//            node.updatePriority(rn.nextInt(500));
+//            heap.insert(node);
+//        }
+//
+//        while (!heap.isEmpty())
+//            System.out.print(heap.removeMin());
+//
+//    }
 }

@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public class Graph extends JPanel {
     static Node [] nodes;
-    static Edge [] edges;
+    static Integer numEdges = 0;
     private static int minX = 9999999;
     private static int minY = 9999999;
     private static int maxX = 0;
@@ -44,10 +44,6 @@ public class Graph extends JPanel {
         this.nodes = nodes;
     }
 
-    public void addEdges(Edge [] edges) {
-        this.edges = edges;
-    }
-
     private double normalize(double value,double min, double max){
         return ((value-min)/(max-min));
     }
@@ -58,7 +54,7 @@ public class Graph extends JPanel {
         int width = getWidth() - 10 ;
         int height = getHeight() - 10;
 
-        if (edges == null || nodes == null) return;
+        if ( nodes == null) return;
         for(Node node:nodes) {
             int x1 = (int)(normalize((double)node.getXCoord(),(double)minX,(double)maxX) * ((double)width-10.) + 10.);
             int y1 = height - (int)(normalize((double)node.getYCoord(), (double)minY, (double)maxY) * ((double)height-10.) + 10.);
@@ -67,14 +63,13 @@ public class Graph extends JPanel {
                 y1 += 10;
             g2.setColor(Color.black);
             g2.fillOval( x1, y1, 5, 5);
-//            g.drawString(Integer.toString(node.getId()), x1, y1);
 
             // Draw edges to neighbouring nodes
             Iterator it = node.getEdges();
             while (it.hasNext()) {
-                Map.Entry pair = (Map.Entry)it.next();
-                int x2 = (int)(normalize((double)nodes[(Integer)pair.getKey()].getXCoord(), minX, maxX) * ((double)width-10.) + 10.);
-                int y2 = height - (int)(normalize((double)nodes[(Integer)pair.getKey()].getYCoord(), minY, maxY) * ((double)height-10.) + 10.);
+                int neighbourId = (Integer)it.next();
+                int x2 = (int)(normalize((double)nodes[neighbourId].getXCoord(), minX, maxX) * ((double)width-10.) + 10.);
+                int y2 = height - (int)(normalize((double)nodes[neighbourId].getYCoord(), minY, maxY) * ((double)height-10.) + 10.);
                 if (y2 == 0)
                     y2 += 10;
                 drawEdge(g, x1, y1, x2, y2, Color.red);
@@ -84,6 +79,7 @@ public class Graph extends JPanel {
         // Draw visited nodes
         if (visitedNodes == null)
             return;
+
         g2.setStroke(new BasicStroke(1));
         for(Integer [] nodePath : visitedNodes) {
             Node startNode = nodes[nodePath[0]];
@@ -163,6 +159,7 @@ public class Graph extends JPanel {
     }
 
      static void createAndShowGUI() {
+
          searchPath = new FindPath(nodes);
          frame = new JFrame("City Traveler");
          frame.getContentPane().setLayout(new BorderLayout());
@@ -181,10 +178,16 @@ public class Graph extends JPanel {
              public void actionPerformed(ActionEvent e) {
                  System.out.println("load");
                  visitedNodes = null;
+                 searchPath.foundPath = null;
+
                  JFileChooser fc = new JFileChooser();
-                 int returnVal = fc.showOpenDialog(toolbar);
+                 int returnVal = fc.showOpenDialog(frame);
                  if (returnVal == JFileChooser.APPROVE_OPTION) {
                      try {
+                         minX = 9999999;
+                         minY = 9999999;
+                         maxX = 0;
+                         maxY = 0;
                          // Load the file
                          FileInputStream fis = new FileInputStream(fc.getSelectedFile());
                          InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
@@ -192,14 +195,13 @@ public class Graph extends JPanel {
                          String line = br.readLine();
                          String[] line_toks;
                          Node[] nodes;
-                         Edge[] edges;
 
                          // Read how many nodes are needed
                          if (line != null) {
                              line_toks = line.split(" ");
                              if (line_toks.length == 2) {
                                  nodes = new Node[Integer.parseInt(line_toks[0])];
-                                 edges = new Edge[Integer.parseInt(line_toks[1])];
+                                 numEdges = Integer.parseInt(line_toks[1]);
                              } else {
                                  System.out.println("1 Line has invalid number of tokens");
                                  return;
@@ -227,19 +229,18 @@ public class Graph extends JPanel {
 
                          line = br.readLine();   // Currently at Empty line, so read next
                          // Read Next Section for edges
-                         for (int i = 0; i < edges.length; i++) {
+                         for (int i = 0; i < numEdges; i++) {
 
                              if (line == null) {
                                  System.out.println("3 Line is null");
                                  return;
                              }
                              line_toks = line.split(" ");
-                             edges[i] = new Edge();
                              if (line_toks.length == 2) {
                                  int nodeID1 = Integer.parseInt(line_toks[0]);
                                  int nodeID2 = Integer.parseInt(line_toks[1]);
-                                 nodes[nodeID1].addEdge(edges[i], nodeID2);
-                                 nodes[nodeID2].addEdge(edges[i], nodeID1);
+                                 nodes[nodeID1].addEdge(nodeID2);
+                                 nodes[nodeID2].addEdge(nodeID1);
                                  line = br.readLine();
                              } else {
                                  System.out.println("4 Line has invalid number of tokens");
@@ -266,8 +267,6 @@ public class Graph extends JPanel {
                          }
 
                          graph.addNodes(nodes);
-                         graph.addEdges(edges);
-                         searchPath.createQueue(nodes);
                          frame.revalidate();
                          frame.repaint();
                      } catch (IOException err) {
@@ -280,6 +279,7 @@ public class Graph extends JPanel {
 
 
          searchBtn.setActionCommand("search");
+         frame.getRootPane().setDefaultButton(searchBtn);
          searchBtn.addActionListener(new ActionListener() {
              @Override
              public void actionPerformed(ActionEvent e) {
@@ -288,39 +288,13 @@ public class Graph extends JPanel {
                      Graph.visitedNodes = search(searchPath, Integer.parseInt(srcNode.getText()), Integer.parseInt(sinkNode.getText()));
                      frame.revalidate();
                      frame.repaint();
-//                     Iterator it = visitedNodes.entrySet().iterator();
-//                     while(it.hasNext()) {
-//                         Map.Entry pair = (Map.Entry)it.next();
-//                         int startKey = (Integer)pair.getKey();
-//                         Node endNode = (Node)pair.getValue();
-//                     }
                  } catch (NumberFormatException numErr) {
 //                     numErr.printStackTrace();
                  }
              }
          });
 
-//         srcNode.addFocusListener(new FocusListener() {
-//             @Override
-//             public void focusGained(FocusEvent e) {
-//                 srcNode.setText("");
-//             }
-//
-//             @Override
-//             public void focusLost(FocusEvent e) {
-//             }
-//         });
 
-//         sinkNode.addFocusListener(new FocusListener() {
-//             @Override
-//             public void focusGained(FocusEvent e) {
-//                 sinkNode.setText("");
-//             }
-//
-//             @Override
-//             public void focusLost(FocusEvent e) {
-//             }
-//         });
          frame.getContentPane().setBackground( Color.gray );
          toolbar.setLayout(new FlowLayout());
          JButton refreshBtn = new JButton("Refresh");
@@ -332,6 +306,7 @@ public class Graph extends JPanel {
                  frame.repaint();
              }
          });
+
          toolbar.add(refreshBtn);
          toolbar.add(loadBtn);
          toolbar.add(srcLabel);
